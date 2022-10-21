@@ -1,0 +1,163 @@
+body {
+  margin: 0;
+  background: #f7f7f7;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.errmsg {
+  color: red;
+}
+
+.warning {
+  background-color: #ffc4c6;
+  color: #a20606;
+  text-align: center;
+  font-weight: bold;
+  padding: 10px;
+}
+
+.board {
+  background-color: white;
+  width: 100%;
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 10px 30px;
+  box-shadow:1px 1px 3px #e8e8e8;
+  border-radius: 5px;
+}
+
+.board__nickname {
+  margin-bottom: 10px;
+}
+
+.board__nickname input {
+  /* box-sizing: border-box; */
+  padding: 5px;
+  border: 1px solid #c2dffb;
+}
+
+.board__new-comment-form textarea{
+  /* box-sizing: border-box; */
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #c2dffb;
+}
+
+.board__submit-btn {
+  padding: 10px;
+  border: 1px solid #c2dffb;
+  border-radius: 5px;
+  width: 100px;
+  color: #583c63;
+  font-size: 16px;
+  background: white;
+}
+
+.board__hr {
+  margin: 20px auto;
+  height: 2px;
+  background-color: #e8e8e8;
+  max-width: 95%;
+}
+
+.card {
+  display: flex;
+  margin: 20px 0;
+  min-height: 70px;
+  position: relative;
+}
+
+.card__avatar {
+  border-radius: 50%;
+  background: #e4f0fb;
+  width: 50px;
+  height: 50px;
+  min-width: 50px;
+}
+
+.card__body {
+  margin-left: 10px;
+}
+
+.card__content {
+  margin-top: 8px;
+  max-width: 100%;
+  word-break: break-all;
+  white-space: pre-line;
+}
+
+.card__author {
+  color: #5c9edc;
+  font-weight: bold;
+}
+
+.card__time {
+  color: #a0a0a0;
+}
+
+.board__btn {
+  text-decoration: none;
+  border-radius: 5px;
+  border: 1px solid #c2dffb;
+  padding: 10px 30px;
+  font-size: 16px;
+  color: black;
+  background-color: white;
+  display: inline-block;
+  cursor: pointer;
+}
+
+/* 
+.update-nickname {
+  font-weight: normal;
+  font-size: 13px;
+  border: 1px solid #c2dffb;
+  border-radius: 5px;
+  padding: 5px;
+  cursor: pointer;
+}
+*/
+
+.hide {
+  display: none;
+}
+
+.board__nickname-form {
+  margin-top: 20px;
+}
+
+.card__edit-btn {
+  position: absolute;
+  right: 2px;
+}
+
+.card__edit-btn a {
+  text-decoration: none;
+  color: #5c9edc;
+  border: 1px solid #5c9edc;
+  border-radius: 5px;
+  padding: 2.5px;
+  margin-right: 2.5px;
+}
+
+.page-info {
+  text-align: center;
+}
+
+.paginator {
+  display: flex;
+  justify-content: center;
+}
+
+.paginator a {
+  text-decoration: none;
+  color: #5c9edc;
+  border: 1px solid #5c9edc;
+  border-radius: 5px;
+  padding: 5px;
+  margin-top: 10px;
+  margin-right: 2.5px;
+}

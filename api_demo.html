@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>留言板</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="warning">
+      注意！本站為練習用網站，因教學用途刻意忽略資安的實作，註冊時請勿使用任何真實的帳號密碼。
+    </header>
+    <main class="board">
+      <h1 class="board__title">Comments</h1>
+      <form class="board__new-comment-form">
+        <textarea name="content" rows="5"></textarea>
+        <input class="board__submit-btn" type="submit" />
+      </form>
+      <div class="board__hr"></div>
+      <section class="card__section">
+        <!-- Use JS to create content dynamically here. -->
+      </section>
+    </main>
+    <script>
+      function getComments(cb) {
+        var request = new XMLHttpRequest();
+        request.open("GET", "api_comments.php", true);
+
+        request.onload = function () {
+          if (this.status >= 200 && this.status < 400) {
+            // Success! If you expect this to be JSON, use JSON.parse!
+            let resp = this.response;
+            let json = JSON.parse(resp);
+            let comments = json.comments;
+            console.log(comments);
+
+            for (let i = 0; i < comments.length; i++) {
+              let comment = comments[i];
+              let div = document.createElement("div");
+              div.classList.add("card");
+              div.innerHTML = `
+            <div class="card__avatar"></div>
+            <div class="card__body">
+              <div class="card__info">
+                <span class="card__author">
+                  ${comment.nickname} (@${comment.username})
+                </span>
+                <span class="card__time"> | ${comment.created_at}</span>
+              </div>
+              <p class="card__content">${escapeHtml(comment.content)}</p>
+            </div>
+            `;
+              document.querySelector(".card__section").appendChild(div);
+            }
+          } else {
+            // We reached our target server, but it returned an error
+            error();
+          }
+        };
+
+        request.onerror = function () {
+          error();
+        };
+
+        request.send();
+      }
+
+      getComments();
+
+      let form = document.querySelector(".board__new-comment-form");
+
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+        let content = document.querySelector("textarea[name=content]").value;
+        let request = new XMLHttpRequest();
+        request.open("POST", "api_add_comment.php", true);
+        request.setRequestHeader(
+          "Content-Type",
+          "application/x-www-form-urlencoded; charset=UTF-8"
+        );
+        request.send("username=aa&content=" + encodeURIComponent(content));
+        request.onload = function () {
+          if (this.status >= 200 && this.status < 400) {
+            let resp = this.response;
+            let json = JSON.parse(resp);
+            // 如果成功新增留言 -> 重新整理, 失敗就顯示錯誤訊息
+            if (json.ok) {
+              location.reload();
+            } else {
+              alert(json.message);
+            }
+          }
+        };
+        console.log(content);
+      });
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    </script>
+  </body>
+</html>
