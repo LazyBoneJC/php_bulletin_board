@@ -2,7 +2,7 @@
 This is a bulletin board website using php as backend.
 
 ## 設計理念＆應用場景
-* 可以說是社群軟體的前身，提供使用者一個自由開放的討論空間。
+可以說是社群軟體的前身，提供使用者一個自由開放的討論空間。
 
 ## 作品細節
 * 後端技術使用 PHP、MariaDB、Apache
