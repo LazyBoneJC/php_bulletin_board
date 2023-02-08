@@ -12,6 +12,8 @@
 	*/
 	$username = NULL;
 	$user = NULL;
+	$userRole = NULL;
+	
 	if (!empty($_SESSION['username'])) {
 		$username = $_SESSION['username'];
 		$user = getUserFromUsername($username);
@@ -51,6 +53,11 @@
 		die("查詢錯誤：" . $e->getMessage());
 	}
 	$result = $stmt->get_result();
+
+	if($username) {
+		$row = getUserRoleFromUsername($username);
+		$userRole = $row['role'];
+	}
 ?>
 
 <!DOCTYPE html>
@@ -72,6 +79,9 @@
 			<?php } else { ?>
 				<a class="board__btn" href="logout.php">登出</a>
 				<span class="board__btn update-nickname">編輯暱稱</span>
+				<?php if ($userRole == 2) { ?>
+					<a class="board__btn" href="admin_panel.php">後台管理</a>
+				<?php } ?>
 				<form action="update_user.php" method="POST" class="hide board__nickname-form">
 					<div class="board__nickname">
 						<span>新的暱稱：</span>
@@ -88,6 +98,8 @@
 				$msg = "Error";
 				if($_GET['errCode'] === '1') {
 					$msg = "資料不齊全！";
+				} elseif ($_GET['errCode'] === '2') {
+					$msg = "無此權限！";
 				}
 				echo "<h3 class='errmsg'>錯誤：" . $msg . "</h3>";
 			}
@@ -109,25 +121,25 @@
 			<?php
 				while($row = $result->fetch_assoc()) {
 			?>
-			<div class="card">
-				<div class="card__avatar"></div>
-				<div class="card__body">
-					<div class="card__info">
-						<span class="card__author">
-							<?php echo escape($row['nickname']); ?>
-							(@<?php echo escape($row['username']); ?>)
-						</span>
-						<span class="card__time"> | <?php echo escape($row['created_at']); ?></span>
-						<?php if($row['username'] === $username) { ?>
-							<span class="card__edit-btn">
-								<a href="update_comment.php?id=<?php echo $row['id'] ?>">編輯</a>
-								<a href="delete_comment.php?id=<?php echo $row['id'] ?>">刪除</a>
+				<div class="card">
+					<div class="card__avatar"></div>
+					<div class="card__body">
+						<div class="card__info">
+							<span class="card__author">
+								<?php echo escape($row['nickname']); ?>
+								(@<?php echo escape($row['username']); ?>)
 							</span>
-						<?php } ?>
+							<span class="card__time"> | <?php echo escape($row['created_at']); ?></span>
+							<?php if($row['username'] === $username || $userRole == 2) { ?>
+								<span class="card__edit-btn">
+									<a href="update_comment.php?id=<?php echo $row['id'] ?>">編輯</a>
+									<a href="delete_comment.php?id=<?php echo $row['id'] ?>">刪除</a>
+								</span>
+							<?php } ?>
+						</div>
+						<p class="card__content"><?php echo escape($row['content']); ?></p>
 					</div>
-					<p class="card__content"><?php echo escape($row['content']); ?></p>
 				</div>
-			</div>
 			<?php } ?>
 		</section>
 		<!-- 以下：實作分頁功能 -->

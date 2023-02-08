@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>留言板</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://code.jquery.com/jquery-3.6.1.js"></script>
+  </head>
+  <body>
+    <header class="warning">
+      注意！本站為練習用網站，因教學用途刻意忽略資安的實作，註冊時請勿使用任何真實的帳號密碼。
+    </header>
+    <main class="board">
+      <h1 class="board__title">Comments</h1>
+      <form class="board__new-comment-form">
+        <textarea name="content" rows="5"></textarea>
+        <input class="board__submit-btn" type="submit" />
+      </form>
+      <div class="board__hr"></div>
+      <section class="card__section">
+        <!-- Use JS to create content dynamically here. -->
+      </section>
+      <button class="btn__load-more">
+        載入更多
+      </button>
+    </main>
+    <script>
+      // Note: jquery 的 ajax response 已經自動將 json 轉換為 JS Object，不需要再經過 JSON.parse() 處理
+      function getComments() {
+        $.ajax({
+          type: "GET",
+          url: "api_comments.php?load=" + sessionStorage.load,
+          success: function (res) {
+            console.log(res);
+            // console.log(res.comments.length);
+            for (let i = 0; i < res.comments.length; i++) {
+              let comment = res.comments[i];
+              let div = document.createElement("div");
+              div.classList.add("card");
+              div.innerHTML = `
+              <div class="card__avatar"></div>
+              <div class="card__body">
+                <div class="card__info">
+                  <span class="card__author">
+                    ${escapeHtml(comment.nickname)} (@${escapeHtml(comment.username)})
+                  </span>
+                  <span class="card__time"> | ${escapeHtml(comment.created_at)}</span>
+                </div>
+                <p class="card__content">${escapeHtml(comment.content)}</p>
+              </div>
+              `;
+              
+              // Native
+              // document.querySelector(".card__section").appendChild(div);
+
+              // jQuery
+              $(".card__section").append(div);
+            }
+
+            // 把 total_comments & items_per_load 存進 session storage
+            sessionStorage.setItem("total_comments", res.total_comments);
+            sessionStorage.setItem("items_per_load", res.items_per_load);
+          },
+          error: function (err) {
+            console.log(err);
+          },
+        });
+      }
+
+      // Initialize load in session storage (每次刷新頁面也會重置)
+      // 把 load 初始值存在 session storage 裡
+      sessionStorage.setItem("load", 1);
+
+      getComments();
+      
+      // let btn_load_more = document.querySelector(".btn__load-more");
+
+      // btn_load_more.addEventListener("click", (e) => {
+      //   sessionStorage.load++;
+      //   getComments();
+      //   if(sessionStorage.load * sessionStorage.items_per_load >= sessionStorage.total_comments) {
+      //     btn_load_more.classList.add("hide");
+      //   }
+      // });
+
+      let btn_load_more = $(".btn__load-more");
+
+      btn_load_more.click(function(e) {
+        sessionStorage.load++;
+        getComments();
+        if(sessionStorage.load * sessionStorage.items_per_load >= sessionStorage.total_comments) {
+          btn_load_more.addClass("hide");
+        }
+      });
+
+      // let form = document.querySelector(".board__new-comment-form");
+
+      // form.addEventListener("submit", (e) => {
+      //   e.preventDefault();
+      //   let content = document.querySelector("textarea[name=content]").value;
+      //   $.ajax({
+      //     type: "POST",
+      //     url: "api_add_comment.php",
+      //     data: "username=admin&content=" + content,
+      //     headers: {
+      //       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+      //     },
+      //     success: function(res) {
+      //       location.reload();
+      //     },
+      //     error: function(err) {
+      //       alert(err.responseText);
+      //     }
+      //   });
+      // });
+
+      let form = $(".board__new-comment-form");
+
+      form.on("submit", function(e) {
+        e.preventDefault();
+        let content = $("textarea[name=content]").val();
+        $.ajax({
+          type: "POST",
+          url: "api_add_comment.php",
+          data: "username=admin&content=" + content,
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8"
+          },
+          success: function(res) {
+            location.reload();
+          },
+          error: function(err) {
+            alert(err.responseText);
+          }
+        });
+      });
+
+      function escapeHtml(text) {
+        return text
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#039;");
+      }
+    </script>
+  </body>
+</html>
